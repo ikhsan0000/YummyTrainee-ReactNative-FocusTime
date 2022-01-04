@@ -103,13 +103,12 @@ const styles = StyleSheet.create({
     buttonWrapper: {
         flexDirection: 'row',
         marginHorizontal: spacing.lg,
-        justifyContent: 'center'
+        justifyContent: 'space-evenly'
         
     },
     minuteButton: {
+        paddingHorizontal: spacing.sm-2,
         borderRadius: 60,
-        paddingHorizontal: spacing.sm-1.5,
-        marginHorizontal: 5,
         borderColor: colors.light
 
     }
