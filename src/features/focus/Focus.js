@@ -50,9 +50,9 @@ const styles = StyleSheet.create({
     paddingTop: spacing.lg
   },
   titleContainer: {
-    flex: 0.5,
+    flex: 1,
     padding: spacing.sm,
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   title: {
     color: colors.light,

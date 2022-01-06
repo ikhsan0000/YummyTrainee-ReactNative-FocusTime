@@ -1,20 +1,46 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, Vibration, Platform } from 'react-native';
 import { colors } from '../utils/colors'
 import { fontSize, spacing } from '../utils/sizes';
 import { Button, ProgressBar, TextInput } from 'react-native-paper';
 import Countdown from './Countdown';
+import { Timing } from '../features/timer/Timing';
+import { useKeepAwake } from 'expo-keep-awake';
 
 
-const Timer = ({focusSubject}) => {
-    
+const Timer = ({focusSubject, onTimerEnd, cancelFocus}) => {
+    useKeepAwake()
+
     const [isCounterStart, setIsCounterStart] = useState(false)
     const [progress, setProgress] = useState(1)
+    const [minutes, setMinutes] = useState(0.1)
+    const changeTime = (min) => {
+        setMinutes(min)
+    }
+
+    const vibrate = () => {
+        if(Platform.OS === 'ios') {
+            const interval = setInterval(() =>Vibration.vibrate(), 1000)
+            setTimeout(() =>clearInterval(interval), 3000)
+        }
+        else{
+            Vibration.vibrate(3000)
+        }
+    }
+
+    const onEnd = () => {
+        vibrate();
+        setMinutes(0.1)
+        setProgress(1)
+        setIsCounterStart(false)
+        onTimerEnd()
+    }
 
     return (
         <View>
             <View style={styles.countdown}>
-                <Countdown isCounterStart={isCounterStart} currentProgress={(current) => setProgress(current)} />
+                <Countdown isCounterStart={isCounterStart} currentProgress={(current) => setProgress(current)} minutes={minutes}
+                onEnd={onEnd} />
             </View>
 
 
@@ -26,27 +52,7 @@ const Timer = ({focusSubject}) => {
                 <ProgressBar style={styles.progressBar} color={colors.primary}  progress={progress}/>
 
             <View style={styles.buttonWrapper}>
-                <Button 
-                mode='outlined'
-                color='#DDBEBE'
-                style={styles.minuteButton}
-                compact={true}
-                >+5 min</Button>
-                
-                <Button 
-                mode='outlined'
-                color='#DDBEBE'
-                style={styles.minuteButton}
-                compact={true}
-                >+10 min</Button>
-                
-                <Button 
-                mode='outlined'
-                color='#DDBEBE'
-                style={styles.minuteButton}
-                compact={true}
-                >+30 min</Button>
-                
+                <Timing changeTime={(min) => changeTime(min)}/>
             </View>
 
             </View>
@@ -67,7 +73,14 @@ const Timer = ({focusSubject}) => {
                 }
             }}
             >{isCounterStart ? "Pause" : "Start"}</Button>
-        
+
+            <Button
+            mode='contained'
+            color='#DDBEBE'
+            style={styles.focusButton}
+            onPress={cancelFocus}
+            >Loser Button</Button>
+
         </View>
     );
 };

@@ -10,12 +10,19 @@ const minToMil = (min) => {
 
 const formatTime = (time) => time < 10 ? `0${time}` : time
 
-const Countdown = ({minutes = 0.1, isCounterStart = false, currentProgress}) => {
+const Countdown = ({minutes, isCounterStart = false, currentProgress, onEnd}) => {
+    
+    const [milliseconds, setMilliseconds] = useState(minToMil(minutes))
     
     const interval = React.useRef(null)
+    const minute = Math.floor(milliseconds / 1000 / 60) % 60
+    const seconds = Math.floor(milliseconds / 1000 ) % 60
+
     const countDown = () => {
         setMilliseconds( (time) => {
             if(time === 0){
+                clearInterval(interval.current);
+                onEnd()
                 return time
             }
 
@@ -24,10 +31,10 @@ const Countdown = ({minutes = 0.1, isCounterStart = false, currentProgress}) => 
             return timeLeft
         })
     }
-    const [milliseconds, setMilliseconds] = useState(minToMil(minutes))
-    const minute = Math.floor(milliseconds / 1000 / 60) % 60
-    const seconds = Math.floor(milliseconds / 1000 ) % 60
 
+    useEffect(() => {
+        setMilliseconds(minToMil(minutes))
+    },[minutes])
 
     useEffect( () => {
         if(isCounterStart)
